@@ -1,0 +1,166 @@
+type: horizontal-stack
+cards:
+  - type: vertical-stack
+    cards:
+      - type: entities
+        title: NSW Warnings & Events
+        show_header_toggle: false
+        entities:
+          - entity: sensor.fire_danger_central_ranges_danger_level_today
+            name: Fire Danger Today
+            card_mod: null
+            style: |
+              :host {
+                  --paper-item-icon-color:
+                    {% if states(config.entity) == 'Extreme' or states(config.entity) == "Catastrophic" %}
+                      red;
+                    {% elif states(config.entity) == 'None' or states(config.entity) == 'High' or states(config.entity) == Moderate %}
+                      green;
+                    {% else %}
+                      gray;
+                    {% endif %}
+                        }        
+          - entity: sensor.fire_danger_central_ranges_danger_level_tomorrow
+            name: Fire Danger Tomorrow
+            card_mod: null
+            style: |
+              :host {
+                  --paper-item-icon-color:
+                    {% if states(config.entity) == 'Extreme' or states(config.entity) == "Catastrophic" %}
+                      red;
+                    {% elif states(config.entity) == 'None' or states(config.entity) == 'High' or states(config.entity) == Moderate %}
+                      green;
+                    {% else %}
+                      gray;
+                    {% endif %}
+                        }        
+          - entity: binary_sensor.fire_danger_central_ranges_fire_ban_today
+            name: Fire Ban Today
+            card_mod: null
+            style: |
+              :host {
+                  --card-mod-icon: 
+                    {% if states(config.entity) == 'on' %}
+                      mdi:fire-off;
+                    {% elif states(config.entity) == 'off' %}
+                      mdi:fire;
+                    {% else %}
+                      mdi:gate;
+                    {% endif %}
+                  --paper-item-icon-color:
+                    {% if states(config.entity) == 'off' %}
+                      green;
+                    {% elif states(config.entity) == 'on' %}
+                      red;
+                    {% else %}
+                      gray;
+                    {% endif %}
+                        }
+          - entity: binary_sensor.fire_danger_central_ranges_fire_ban_tomorrow
+            name: Fire Ban Tomorrow
+            card_mod: null
+            style: |
+              :host {
+                  --card-mod-icon: 
+                    {% if states(config.entity) == 'on' %}
+                      mdi:fire-off;
+                    {% elif states(config.entity) == 'off' %}
+                      mdi:fire;
+                    {% else %}
+                      mdi:gate;
+                    {% endif %}
+                  --paper-item-icon-color:
+                    {% if states(config.entity) == 'off' %}
+                      green;
+                    {% elif states(config.entity) == 'on' %}
+                      red;
+                    {% else %}
+                      gray;
+                    {% endif %}
+                        }
+      - type: conditional
+        conditions:
+          - entity: sensor.fire_danger_central_ranges_danger_level_today
+            state: No Rating
+        card:
+          show_state: false
+          show_name: false
+          camera_view: auto
+          type: picture-entity
+          entity: sensor.fire_danger_central_ranges_danger_level_today
+          image: /local/icons/firedangernew/fdr-no-rating.svg
+      - type: conditional
+        conditions:
+          - entity: sensor.fire_danger_central_ranges_danger_level_today
+            state: High
+        card:
+          show_state: false
+          show_name: false
+          camera_view: auto
+          type: picture-entity
+          entity: sensor.fire_danger_central_ranges_danger_level_today
+          image: /local/icons/firedangernew/fdr-high.svg
+      - type: conditional
+        conditions:
+          - entity: sensor.fire_danger_central_ranges_danger_level_today
+            state: Moderate
+        card:
+          show_state: false
+          show_name: false
+          camera_view: auto
+          type: picture-entity
+          entity: sensor.fire_danger_central_ranges_danger_level_today
+          image: /local/icons/firedangernew/fdr-moderate.svg
+      - type: conditional
+        conditions:
+          - entity: sensor.fire_danger_central_ranges_danger_level_today
+            state: Extreme
+        card:
+          show_state: false
+          show_name: false
+          camera_view: auto
+          type: picture-entity
+          entity: sensor.fire_danger_central_ranges_danger_level_today
+          image: /local/icons/firedangernew/fdr-extreme.svg
+      - type: conditional
+        conditions:
+          - entity: sensor.central_ranges_danger_level_today
+            state: Catastrophic
+        card:
+          show_state: false
+          show_name: false
+          camera_view: auto
+          type: picture-entity
+          entity: sensor.fire_danger_central_ranges_danger_level_today
+          image: /local/icons/firedangernew/fdr-catastrophic.svg
+  - type: vertical-stack
+    cards:
+      - type: map
+        entities:
+          - entity: zone.home
+        dark_mode: false
+        geo_location_sources:
+          - nsw_rural_fire_service_feed
+        default_zoom: 10
+      - type: entities
+        title: Geo Location Incidents
+        show_header_toggle: false
+        entities:
+          - type: custom:auto-entities
+            card:
+              type: custom:fold-entity-row
+              padding: 0
+              head:
+                type: section
+                label: Current RFS Incidents
+              open: false
+            filter:
+              include:
+                - entity_id: geo_location.nsw_fire_service_feed*
+              exclude:
+                - state: unknown
+                - state: '0'
+            show_empty: true
+            sort:
+              method: state
+              numeric: true
